@@ -33,8 +33,8 @@ userRouter.post("/login", async(req, res)=>{
         if(user){
             bcrypt.compare(password, user.password, function(err, result) {
                 if(result){
-                    const accessToken = jwt.sign({email:user.email}, process.env.Access_Key) // generate Access token
-                    const refreshToken = jwt.sign({emai:email}, process.env.Refresh_Key) // generate Refresh Toke
+                    const accessToken = jwt.sign({email:user.email}, process.env.Access_Key, {expiresIn: "10m"}) // generate Access token
+                    const refreshToken = jwt.sign({emai:email}, process.env.Refresh_Key, {expiresIn:"24h"}) // generate Refresh Toke
                     res.cookie('RToken', refreshToken, {
                         httpOnly: true, sameSite: "None", secure: true, maxAge: 24*60*60*1000
                     })
@@ -58,7 +58,7 @@ userRouter.post("/refresh", (req, res)=>{
             if(err){
                 res.status(400).send({"msg":"Unauthorized user"})
             } else {
-                const accessToken = jwt.sign({email:"user.email"}, process.env.Access_Key)
+                const accessToken = jwt.sign({email:"user.email"}, process.env.Access_Key, {expiresIn:"10m"})
                 res.send({"msg":accessToken})
             }
         })
